@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Arasan Stores - Add Product {%endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Create a New Book</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{form | crispy}}
+            <button type="submit" class="btn btn-success">Create</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+NameIt_-Sign Up Success
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="container">
+        {% if success %}
+        <strong>Registration successful. Please check your Email for activation link.</strong>
+        {% else %}
+        <h3>404 Not found</h3>
+        {% endif %}
+    </div>
+
+{% endblock %}

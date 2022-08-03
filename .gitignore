@@ -1,0 +1,7 @@
+.idea/
+src/db.sqlite3
+src/media/
+src/media/images/
+src/**/__pycache__/
+src/**/migrations/__pycache__/
+venv/

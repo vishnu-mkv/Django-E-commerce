@@ -1,0 +1,8 @@
+Hello {{name}}!
+Click on the link below to activate your Arasan stores account.
+Your email : {{email}}
+
+{{path}}
+
+Thank you
+Team

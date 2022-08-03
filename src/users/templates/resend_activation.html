@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% load crispy_forms_tags %} {% block title %} Arasan
+Stores - Resend activation {% endblock %} {% block content %}
+
+<div class="">
+  <h2>Resend activation</h2>
+  <br />
+  <form method="post" action="">
+    {% csrf_token %} {{ form|crispy }}
+
+    <button class="btn btn-outline-primary" type="submit">Resend</button>
+    <br /><br />
+    <p>Already have an active account? <a href="/users/login">Login</a></p>
+  </form>
+</div>
+
+{% endblock %}

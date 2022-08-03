@@ -1,0 +1,112 @@
+{% extends 'base.html' %} 
+{%load static %}
+
+{% block title %} Arasan Stores {%endblock %}
+
+<br />
+{% block content %}
+
+<div class="header d-flex justify-content-between align-items-center">
+    <h3>Our Products</h3>
+    {% if user.is_admin %}
+    <a href="/products/create" class="btn btn-primary mt-2 mb-2 text-white">
+        <i class="fa-solid fa-plus mr-2"></i>  Add Product
+    </a>
+    {% endif %}
+</div>
+<br />
+
+{%for product in products %}
+<div class="row justify-content-center mb-3">
+  <div class="col-md-12 col-xl-12">
+    <div class="card shadow-0 border rounded-3">
+      <div class="card-body">
+        <div class="row">
+          <a class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0" href="{% url 'store:product-detail' product.id%}">
+              <img src="/media/{{ product.image }}" style="object-fit: cover; width: 100%; height:100%;" />
+          </a>
+          <div class="col-md-6 col-lg-6 col-xl-6 d-flex flex-column justify-self-stretch">
+            <h5>
+              <a href="{% url 'store:product-detail' product.id%}">
+              {{ product.name }}</h5>
+            </a>
+
+            <p class="mb-3">
+              {{ product.description }}
+            </p>
+
+            <div class="d-flex my-3 text-white flex-wrap">
+                {% if product.available %}
+                <p class="px-4 py-2 rounded mr-3 bg-success mb-0  mt-2">{{ product.availableQuantity }}</p>
+                {% else %}
+                <p class="px-4 py-2 rounded mr-3 bg-danger mb-0 mt-2">Out of Stock</p>
+                {% endif %}
+                {% if product.discounted %}
+                <p class="px-4 py-2 rounded mr-3 bg-success mb-0 mt-2">{{ product.discountPercentage }}</p>
+                {% endif %}
+                {% if product.expired %}
+        <p class="px-4 py-2 rounded mr-3 bg-warning mb-0 mt-2 text-black">Expired</p>
+        {% endif %}
+            </div>
+          </div>
+          <div
+            class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start"
+          >
+            <div class="d-flex flex-row align-items-center mb-1">
+                <h4 class="mb-1 me-1 mr-3">Rs.{{ product.discountedPrice }}</h4>
+                {% if product.discounted %}
+                    <span class="text-danger"><s>Rs.{{ product.price }}</s></span>
+                {% endif %}
+            </div>
+            
+            {% if product.shipping_cost == 0 %}
+            <h6 class="text-success">Free shipping</h6>
+            {% else %}
+            <small class="">+ Shipping cost Rs.{{ product.shipping_cost }}</small>
+            {% endif %}
+            <div class="d-flex flex-column mt-4">
+              
+              {% if product.available %}
+                {% if product.inCart %}
+                <button class="btn btn-warning mt-2 w-100 addCart" type="button" onclick="removeFromCart(event, {{ product.id}});">
+                  Remove from Cart
+                </button>
+                <button class="btn btn-primary mt-2 w-100 d-none removeCart" type="button" onclick="addToCart(event, {{ product.id }});">
+                  Add to Cart
+                </button>
+                {% else %}
+                <button class="btn btn-warning mt-2 w-100 d-none addCart" type="button" onclick="removeFromCart(event, {{ product.id}});">
+                  Remove from Cart
+                </button>
+                <button class="btn btn-primary mt-2 w-100 removeCart" type="button" onclick="addToCart(event, {{ product.id }});">
+                  Add to Cart
+                </button>
+                {% endif %}
+              {% endif %}
+
+              {% if user.is_admin %}
+              <div class="px-0 d-flex space-between">
+
+                  <a class="btn btn-outline-primary mt-2 flex-grow-1 mr-1" href="{% url 'store:product-update' product.id%}"">
+                  Edit
+                  </a>
+                <a class="btn btn-danger mt-2 flex-grow-1 ml-1" href="{% url 'store:product-delete' product.id%}">
+                  Delete
+                </a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% if is_paginated %}
+    {% include "_pagination.html" %}
+{% endif %}
+{%endfor%} {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/addToCart.js' %}" type="text/javascript"></script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="">
+    <div class="row">
+
+        <div class="col-md-12 col-xl-12">
+            <div class="row justify-content-between align-items-center">
+
+                <div class="col-sm-12 col-md-7 col-lg-6 col-xl-6 d-flex flex-column">
+                    <h2>
+                        {{ product.name }}</h2>
+                        <p class="mb-3">
+                            {{ product.description }}
+                        </p>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-2 col-xl-2">
+                        {% if product.available %}
+
+              <button class="w-100 btn btn-primary my-2" type="button">
+                Add to Cart
+              </button>
+              {% endif %}
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div class="d-flex flex-row align-items-center mb-1 mt-4">
+        <h4 class="mb-1 me-1 mr-3">Rs.{{ product.discountedPrice }}</h4>
+        {% if product.discounted %}
+            <span class="text-danger"><s>Rs.{{ product.price }}</s></span>
+        {% endif %}
+    </div>
+
+    {% if product.shipping_cost == 0 %}
+            <h6 class="text-success">Free shipping</h6>
+            {% else %}
+            <small class="">+ Shipping cost Rs.{{ product.shipping_cost }}</small>
+            {% endif %}
+    
+    <div class="d-flex my-3 text-white flex-wrap">
+        {% if product.available %}
+        <p class="px-4 py-2 rounded mr-3 bg-success mb-0">{{ product.availableQuantity_ }}</p>
+        {% else %}
+        <p class="px-4 py-2 rounded mr-3 bg-danger mb-0">Out of Stock</p>
+        {% endif %}
+        {% if product.discounted %}
+        <p class="px-4 py-2 rounded mr-3 bg-success mb-0">{{ product.discountPercentage }}</p>
+        {% endif %}
+        {% if product.expired %}
+        <p class="px-4 py-2 rounded mr-3 bg-warning mb-0 text-black">Expired</p>
+        {% endif %}
+    </div>
+
+    <div class="">
+
+    <img src="/media/{{ product.image }}" class="container px-0 mb-3">
+    
+    {% if user.is_admin %}
+    <h4 class="my-3 mb-4">Other Details</h4>
+    <dl class="row">
+        <dt class="col-sm-3">Created At</dt>
+        <dd class="col-sm-9">{{ product.created_at }}</dd>
+        <dt class="col-sm-3">Updated At</dt>
+        <dd class="col-sm-9">{{ product.updated_at }}</dd>
+        <dt class="col-sm-3">Units Sold</dt>
+        <dd class="col-sm-9">{{ product.units_sold }}</dd>
+    </dl>
+    <div class="px-0 d-flex space-between w-100">
+
+        <a class="btn btn-outline-primary mt-2 flex-grow-1 mr-1" href="{% url 'store:product-update' product.id%}"">
+        Edit
+        </a>
+      <a class="btn btn-danger mt-2 flex-grow-1 ml-1" href="{% url 'store:product-delete' product.id%}">
+        Delete
+      </a>
+    </div>
+    {% endif %}
+    
+
+    </div>
+</div>
+
+{% endblock %}
