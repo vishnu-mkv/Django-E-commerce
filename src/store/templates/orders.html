@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+    
+    {% block content %}
+        {% if message %}
+            {% if message.type == 'success' %}
+                <div class="alert alert-success">
+                    {{ message.text }}
+                </div>
+            {% else %}
+                <div class="alert alert-danger">
+                    {{ message.text }}
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if not orders.exists %}
+    <p>No Orders to display.</p>
+{% endif %}
+{% if orders.exists %}
+
+{% for order in orders %}
+<div class="bg-light p-2">
+    
+    <div class="d-flex justify-content-between">
+     <h4 class="pb-3"><u>Order ID : {{order.id}}</u></h4>
+     {% if staff and user.is_admin and order.status == 'Pending' %}
+     <form action="" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="order_id" value="{{order.id}}">
+        <button class="btn btn-primary">Complete Order</button>
+     </form>
+        {% endif %}
+    </div>
+     <p class="text-primary">Order Status : {{order.status}}</p>
+     <p>User Name: {{ order.user.get_full_name}}</p>
+     <p>Order Date : {{order.created_at}}</p>
+        <p>Shipping cost: {{order.shipping_cost}}</p>
+        <p>Total Cost : {{order.total}}</p>
+        <p>Shipping Address : {{order.address}}</p>
+        <p>Order Items :</p>
+    
+    {%for entry in order.entries.all %}
+    {% with entry.product as product %}
+    <div class="row justify-content-center mb-3 remove-me">
+      <div class="col-md-12 col-xl-12">
+        <div class="card shadow-0 border rounded-3">
+          <div class="card-body">
+            <div class="row">
+              <a class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0" href="{% url 'store:product-detail' product.id%}">
+                  <img src="/media/{{ product.image }}" style="object-fit: cover; width: 100%; height:100%;" />
+              </a>
+              <div class="col-md-6 col-lg-6 col-xl-6 d-flex flex-column justify-self-stretch">
+                <h5>
+                  <a href="{% url 'store:product-detail' product.id%}">
+                  {{ product.name }}</h5>
+                </a>
+    
+                <p class="mb-3">
+                  {{ product.description }}
+                </p>
+    
+                <div class="d-flex my-3 text-white flex-wrap">
+                    {% if product.discounted %}
+                    <p class="px-4 py-2 rounded mr-3 bg-success mb-0 mt-2">{{ product.discountPercentage }}</p>
+                    {% endif %}
+                </div>
+              </div>
+              <div
+                class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start"
+              >
+                <div class="d-flex flex-row align-items-center mb-1">
+                    <h4 class="mb-1 me-1 mr-3">Rs.{{ product.discountedPrice }}</h4>
+                    {% if product.discounted %}
+                        <span class="text-danger"><s>Rs.{{ product.price }}</s></span>
+                    {% endif %}
+                </div>
+    
+                {% if product.shipping_cost == 0 %}
+                <h6 class="text-success">Free shipping</h6>
+                {% else %}
+                <small class="">+ Shipping cost Rs.{{ product.shipping_cost }}</small>
+                {% endif %}
+    
+              </div>
+            </div>
+          </div>
+    
+        {% if product.available and not product.expired %}
+        <div class="container  border-top border-dark pt-2">
+            <div class="row my-2 d-flex flex-wrap">
+                <div class="col bg-3 md-4 sm-12 d-flex align-items-center">
+                    <h6 class="mr-3">Quantity</h6>
+                    <div class="container d-flex">
+                        <!-- decrement count -->
+    
+                        <h5 class="rounded-0 counter" id="quantity" name="quantity">{{entry.quantity}} {{ product.unit | upper }}</h5>
+                        <!-- increment count -->
+    
+                    </div>
+                </div>
+                <div class="col bg-3 md-4 sm-12 d-flex align-items-center justify-content-between mt-3  m-md-0 flex-wrap">
+                    <h6>Total Price</h6>
+                    <div class="d-flex flex-row align-items-center mb-1">
+                        <h4 class="mb-1 me-1 mr-3">Rs.{{ entry.totalWithDiscount }}</h4>
+                        {% if entry.discounted %}
+                            <span class="text-danger"><s>Rs.{{ entry.total }}</s></span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+</div>
+{% endfor %}
+{%endif %}
+        {% endblock %}

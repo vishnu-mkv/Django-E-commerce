@@ -21,4 +21,9 @@ urlpatterns = [
         name='cart-add'),
         path('cart/remove', views.cart_remove,
         name='cart-remove'),
+        path('checkout', views.checkout,
+        name='checkout'),
+        # path('/order_success', views.order_success, name='order-success'),
+        path('myorders', views.my_orders, name='myorders'),
+        path('orders', views.orders, name='orders'),
 ]

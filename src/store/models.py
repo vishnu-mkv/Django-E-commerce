@@ -91,6 +91,23 @@ class CartEntry(models.Model):
     def discounted(self):
         return self.product.discount > 0
 
+
+# Orders
+class Order(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=10, default='Pending')
+    address = models.TextField(blank=True, null=True)
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    discount = models.IntegerField(default=0, validators=[
+            MaxValueValidator(100),
+            MinValueValidator(0)    
+        ])
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    entries = models.ManyToManyField(CartEntry, blank=True)  
+
+
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cart')
     entries = models.ManyToManyField(CartEntry, blank=True)
@@ -142,11 +159,8 @@ class Cart(models.Model):
     def addEntry(self, product_id, quantity):
         # find cart entry already exists
         product = Product.objects.get(id=product_id)
-        entry = self.entries.filter(product=product, quantity=quantity)
-        if not entry.exists():
-            entry = CartEntry.objects.create(product=product, quantity=quantity)
-        else:
-            entry = entry.first()
+        
+        entry = CartEntry.objects.create(product=product, quantity=quantity)
         
         entry.users.add(self.user)
         # old entries
@@ -155,11 +169,20 @@ class Cart(models.Model):
         self.entries.add(entry)
 
         # if oEntires is not referenced by any other cart, delete it
-        for entry in oEntries:
-            if entry.cart_set.count() == 0:
-                entry.delete()
 
         # save cart
         self.save()
         return entry
 
+    # checkout
+    def checkout(self, address):
+        # move product entries to order and empty cart
+        #create order
+        order = Order.objects.create(user=self.user, address=address, total=self.FullPriceWithDiscount, shipping_cost=self.shipping)
+        for entry in self.entries.all():
+            order.entries.add(entry)
+            entry.product.available_quantity -= entry.quantity
+            entry.product.save()
+        self.entries.clear()
+        self.save()
+        return order

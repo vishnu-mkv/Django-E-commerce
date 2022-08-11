@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from store.forms import CartEntryForm, ProductForm
 
-from .models import Cart, CartEntry, Product
+from .models import Cart, CartEntry, Order, Product
 
 class ProductListView(ListView):
 
@@ -136,3 +136,35 @@ def cart_remove(request):
         return JsonResponse({'success': True})
     except e:
         return JsonResponse({'success': False, 'errors': e})
+
+
+# checkout  
+@login_required
+def checkout(request):
+    # if post get address and checkout cart
+    if request.method == 'POST':
+        cart = Cart.objects.get(user=request.user)
+        if not request.POST['address']:
+            return render(request, 'cart.html', {'cart': cart, 'error': 'You must enter an address'})
+        cart.checkout(request.POST['address'])
+        return redirect('store:myorders')
+
+@login_required
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    print(orders, orders.exists())
+    return render(request, 'orders.html', {'orders': orders})
+    
+# all orders
+@staff_member_required
+def orders(request):
+
+    if(request.method == 'POST'):
+        order_id = int(request.POST['order_id'])
+        print(order_id, "ndsak")
+        order = Order.objects.get(id=order_id)
+        order.status = 'Delivered'
+        order.save()
+
+    orders = Order.objects.all().order_by('-created_at')
+    return render(request, 'orders.html', {'orders': orders, 'staff': True})    

@@ -81,6 +81,18 @@
               >
             </li>
             <li class="nav-item">
+              <a href="/myorders" class="nav-link mr-3 mr-md-0"
+                ><i class="fa-solid fa-bag-shopping"></i>  My Orders</a
+              >
+            </li>
+            {% if user.is_admin %}
+            <li class="nav-item">
+              <a href="/orders" class="nav-link mr-3 mr-md-0"
+                ><i class="fa-solid fa-bag-shopping"></i>  All Orders</a
+              >
+            </li>
+            {% endif %}
+            <li class="nav-item">
               <a href="/users/logout" class="nav-link mr-3 mr-md-0"
                 ><i class="fa-solid fa-arrow-right-from-bracket"></i> LogOut</a
               >
