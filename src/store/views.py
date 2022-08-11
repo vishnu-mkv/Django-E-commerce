@@ -152,7 +152,6 @@ def checkout(request):
 @login_required
 def my_orders(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    print(orders, orders.exists())
     return render(request, 'orders.html', {'orders': orders})
     
 # all orders
@@ -161,7 +160,6 @@ def orders(request):
 
     if(request.method == 'POST'):
         order_id = int(request.POST['order_id'])
-        print(order_id, "ndsak")
         order = Order.objects.get(id=order_id)
         order.status = 'Delivered'
         order.save()
